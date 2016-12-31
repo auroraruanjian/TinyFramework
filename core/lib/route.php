@@ -51,14 +51,13 @@ class route{
     public function _setArgRouter(){
         $url = explode('/', get('c','') );
         
-        if( isset($url[0]) && $this->checkUrl( $url[0]) ){
+        if( !empty($url[0]) && $this->checkUrl( $url[0]) ){
             $this->ctrl = $url[0];
         }else{
             $this->ctrl = conf::get('CTRL', 'route');
-            
         }
         
-        if( isset($url[1]) && $this->checkUrl( $url[1] ) ){
+        if( !empty($url[1]) && $this->checkUrl( $url[1] ) ){
             $this->action = $url[1];
         }else{
             $this->action = conf::get('ACTION', 'route');
@@ -67,7 +66,7 @@ class route{
     }
     
     public function checkUrl($url){
-        if( preg_match ('/^[a-zA-Z\d\-_]{0,20}$/', $url )){
+        if( preg_match ('/^[a-zA-Z\d\-_]{1,20}$/', $url )){
            return true;  
         }
         return false;

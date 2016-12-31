@@ -3,7 +3,7 @@ namespace core\lib\drive\session;
 class phpiredis implements \SessionHandlerInterface{
     private $redis;     // Redis 链接
     private $config;    // Redis 配置
-    private $_key_prefix='sess_';   //前缀
+    private $_key_prefix='s_';   //前缀
     
     public function __construct($option){
         if(!function_exists('phpiredis_connect')){
@@ -41,7 +41,7 @@ class phpiredis implements \SessionHandlerInterface{
         }
         
         //切换 Redis 库
-        phpiredis_command_bs($this->redis,array('SELECT','0'));
+        phpiredis_command_bs($this->redis,array('SELECT','8'));
     }
     public function close(){
         if(empty($this->redis) || !is_resource($this->redis) ){
@@ -57,7 +57,7 @@ class phpiredis implements \SessionHandlerInterface{
     public function write($id, $data){
         phpiredis_multi_command_bs($this->redis,array(
             array('SET',$this->_key_prefix.$id,$data),
-            array('EXPIRE',$this->_key_prefix.$id,3000)
+            array('EXPIRE',$this->_key_prefix.$id,5000)
         ));
     }
     public function destroy($id){
