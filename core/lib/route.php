@@ -1,15 +1,22 @@
 <?php
 namespace core\lib;
 class route{
-    public $ctrl;
-    public $action;
+    static public $ctrl;
+    static public $action;
     
     public function __construct(){
+        
         $type=conf::get('TYPE', 'route');
+        $prefix=conf::get('PREFIX', 'route');
+        
         if($type ==1 ){
             $this->_setDsRouter();
         }else if ($type == 2){
             $this->_setArgRouter();
+        }
+        
+        if( !empty($prefix) ){
+            self::$action = $prefix . ucfirst( self::$action ) ;
         }
     }
     
@@ -22,14 +29,14 @@ class route{
         if( isset( $path ) && $path != '/'){
             $patharr= explode( '/' , trim($path,'/') );
             if(isset($patharr[0])){
-                $this->ctrl   = $patharr[0];
+                self::$ctrl  = $patharr[0];
             }
             unset($patharr[0]);
             if(isset($patharr[1])){
-                $this->action = $patharr[1];
+                self::$action = $patharr[1];
                 unset($patharr[1]);
             }else{
-                $this->action = conf::get('ACTION', 'route');
+                self::$action = conf::get('ACTION', 'route');
             }
         
             // 处理 /index/index/id/1 参数URL
@@ -43,32 +50,42 @@ class route{
             }
         
         }else{
-            $this->ctrl   = conf::get('CTRL', 'route');
-            $this->action = conf::get('ACTION', 'route');
+            self::$ctrl   = conf::get('CTRL', 'route');
+            self::$action = conf::get('ACTION', 'route');
         }
     }
     
+    /**
+     * @todo 设置参数 URL 例： http://domain/?c=default/index&param=aaa,调用 default 控制器 index 方法
+     */
     public function _setArgRouter(){
-        $url = explode('/', get('c','') );
+        $urlslice = conf::get('URLSLICE', 'route');
+        $url = explode('/', get($urlslice,'') );
         
         if( !empty($url[0]) && $this->checkUrl( $url[0]) ){
-            $this->ctrl = $url[0];
+            self::$ctrl = $url[0];
         }else{
-            $this->ctrl = conf::get('CTRL', 'route');
+            self::$ctrl = conf::get('CTRL', 'route');
         }
         
         if( !empty($url[1]) && $this->checkUrl( $url[1] ) ){
-            $this->action = $url[1];
+            self::$action = $url[1];
         }else{
-            $this->action = conf::get('ACTION', 'route');
+            self::$action = conf::get('ACTION', 'route');
         }
         
     }
     
+    /**
+     * @todo 检查URL是否合法
+     * @param String $url url地址
+     * @return boolean 合法返回TRUE，不合法返回FALSE 
+     */
     public function checkUrl($url){
         if( preg_match ('/^[a-zA-Z\d\-_]{1,20}$/', $url )){
            return true;  
         }
         return false;
     }
+    
 }

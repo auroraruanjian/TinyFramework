@@ -37,5 +37,9 @@
     //SESSION初始化
     $GLOBALS['oSession'] = new \core\lib\session();
     
-    \core\A::run();
+    $config = array(
+        'dispatcher' => 'admin\authdispatcher',           //调度器配置
+    );
+    
+    \core\A::run($config);
 ?>

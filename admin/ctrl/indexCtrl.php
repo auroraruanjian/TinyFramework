@@ -7,10 +7,10 @@ class indexCtrl extends \core\lib\baseCtrl  {
         if(isset($_SESSION['user'])){
             //dump($_SESSION,session_id());
         }else{
-            $_SESSION['user']=array(
-                'username' => 'nick',
-                'age'      => '20'
-            );
+//             $_SESSION['user']=array(
+//                 'username' => 'nick',
+//                 'age'      => '20'
+//             );
         }
         
         $data = 'hello world ';

@@ -159,3 +159,30 @@ if ( ! function_exists('is_php'))
         return $_is_php[$version];
     }
 }
+
+
+
+/**
+ * @todo 创建URL链接
+ * @param
+ */
+function url( $ctrl , $action , $param = ''){
+    $type=core\lib\conf::get('TYPE', 'route');
+    if($type == 1){
+
+    }else if($type == 2){
+        $urlslice = core\lib\conf::get('URLSLICE', 'route');
+        return '/?'.$urlslice.'='.$ctrl.'/'.$action.'&'.$param;
+    }
+}
+
+function ajaxMsg( $code , $msg = 'success' , $data = array() ){
+    $return_data = array(
+        'code' => $code ,
+        'msg'  => $msg 
+    );
+    if(!empty($data)){ $return_data['data'] = $data; }
+    
+    echo json_encode($return_data);
+    exit();
+}
