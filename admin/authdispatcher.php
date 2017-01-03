@@ -35,10 +35,11 @@ class authdispatcher extends dispatcher{
 
     	$iuserid = !empty( $_SESSION['userid'] ) ? $_SESSION['userid'] : '0' ;
     	
+    	//如果已经登录，再次打开 登录页，则跳转到主页
     	if( $control =='default' && in_array($action,array('login')) && $iuserid != 0 ){
     		return -1;
     	}
-        
+    	
         $oUsermenu = new usermenuModel();
         
         return $oUsermenu->checkMenuAccess( $iuserid , $control, $action );

@@ -17,34 +17,17 @@ class A{
             throw new \Exception('类型错误！' );
         }
         
+        //初始化路由类
         $route = new \core\lib\route();
-        $ctrlClass = $route::$ctrl;
-        $action = $route::$action;
 
         //在Action运行之前运行，做一些权限校验之类
         $dispatcher -> beforAction();           
         
-        $ctrlfile=APP.DS.'ctrl'.DS.$ctrlClass.'Ctrl.php';
-        $cltrlClass = '\\'.MODULE.'\ctrl\\'.$ctrlClass.'Ctrl';
-        if(is_file($ctrlfile)){
-            include $ctrlfile;
-            if( class_exists($cltrlClass) ){
-                $ctrl = new $cltrlClass;
-                if(method_exists($ctrl, $action)){
-                    $ctrl -> $action();
-                    $dispatcher -> afterAction();
-                }else{
-                    \core\lib\log::log('cannot found '.$action,'router_error');
-                    throw new \Exception("找不到控制器 ".$action);
-                }
-            }else{
-                \core\lib\log::log('cannot found '.$ctrlClass,'router_error');
-                throw new \Exception("找不到类 ".$ctrlClass);
-            }
-        }else{
-            \core\lib\log::log('cannot found '.$ctrlfile,'router_error');
-            throw new \Exception("找不到文件 ".$ctrlfile);
-        }
+        //路由调用方法，检查
+        $route -> _run();           
+        
+        //在Action运行之后运行，做一些后续输出控制之类
+        $dispatcher -> afterAction();
     }
     
     static public function load($class){

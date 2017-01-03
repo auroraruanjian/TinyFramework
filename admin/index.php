@@ -32,7 +32,7 @@
     //初始化视图层
     $GLOBALS['oViews'] = new \core\lib\views();
     
-    $GLOBALS['oViews']->assign('templatepath',DS.'admin'.DS.'views'.DS.'notebook');     //配置 视图位置
+    $GLOBALS['oViews']->assign('templatepath',DS.'admin'.DS.'views'.DS.'notebook');     //配置 资源文件 位置
     
     //SESSION初始化
     $GLOBALS['oSession'] = new \core\lib\session();

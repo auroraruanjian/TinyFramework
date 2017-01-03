@@ -77,6 +77,34 @@ class route{
     }
     
     /**
+     * @todo 路由运行方法，检查 控制器|方法 是否存在，存在则运行，不存在则抛出异常
+     * @throws \Exception
+     */
+    public function _run(){
+        $ctrlfile=APP.DS.'ctrl'.DS.self::$ctrl.'Ctrl.php';
+        $cltrlClass = '\\'.MODULE.'\ctrl\\'.self::$ctrl.'Ctrl';
+        if(is_file($ctrlfile)){
+            include $ctrlfile;
+            if( class_exists($cltrlClass) ){
+                $ctrl = new $cltrlClass;
+                $method_name = self::$action;
+                if(method_exists($ctrl, $method_name)){
+                    $ctrl -> $method_name();
+                }else{
+                    \core\lib\log::log('cannot found '.$method_name,'router_error');
+                    throw new \Exception("找不到控制器 ".$method_name);
+                }
+            }else{
+                \core\lib\log::log('cannot found '.$cltrlClass,'router_error');
+                throw new \Exception("找不到类 ".$cltrlClass);
+            }
+        }else{
+            \core\lib\log::log('cannot found '.$ctrlfile,'router_error');
+            throw new \Exception("找不到文件 ".$ctrlfile);
+        }
+    }
+    
+    /**
      * @todo 检查URL是否合法
      * @param String $url url地址
      * @return boolean 合法返回TRUE，不合法返回FALSE 

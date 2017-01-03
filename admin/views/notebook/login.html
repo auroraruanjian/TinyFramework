@@ -50,14 +50,13 @@
                 },
                 success:function(data,textStatus,jqXHR){
                     if( data.code == 200){
-                        alert(data.msg);
+                        //alert(data.msg);
                         if( typeof(data.data.url) != 'undefined' && data.data.url!='' ){
                             window.location.href=data.data.url;
                         }
                     }else {
                         alert(data.msg);
                     }
-                    console.log(data);
                 }
             });
         }else{

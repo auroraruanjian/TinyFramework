@@ -47,8 +47,6 @@ class session{
         
         session_start();
         
-        $GLOBALS['oSessionData'] = $_SESSION;
-        
     }
     
 }
