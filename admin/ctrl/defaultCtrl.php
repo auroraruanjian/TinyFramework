@@ -1,6 +1,6 @@
 <?php
 namespace admin\ctrl;
-use admin\model\userModel;
+use admin\model\adminuserModel;
 
 class defaultCtrl extends \core\lib\baseCtrl  {
     
@@ -10,7 +10,7 @@ class defaultCtrl extends \core\lib\baseCtrl  {
             $username = post('username');
             $password = post('password');
             
-            $userModel = new userModel();
+            $userModel = new adminuserModel();
             $user = $userModel -> getUser($username);
             
             if( $user && $user['password'] == md5($password) ){
@@ -22,14 +22,12 @@ class defaultCtrl extends \core\lib\baseCtrl  {
                 ajaxMsg(500,'登录失败');
             }
         }else{
-            $GLOBALS['oViews']->assign('submiturl','/admin'.url('default','login'));
-        
             $GLOBALS['oViews']->display('notebook/login.html');
         }
     }
     
     public function actionIndex(){
-        
+    	
         $data = 'hello world ';
         
         $GLOBALS['oViews']->assign('data',$data);

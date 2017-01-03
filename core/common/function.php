@@ -5,7 +5,7 @@
  * @param $var  变量
  * @param $type int 类型 1和2
  */
-function p($var,$type=2){
+function p($var,$type=1){
     if($type==1){
         dump($var);
     }else{
@@ -172,10 +172,16 @@ function url( $ctrl , $action , $param = ''){
 
     }else if($type == 2){
         $urlslice = core\lib\conf::get('URLSLICE', 'route');
-        return '/?'.$urlslice.'='.$ctrl.'/'.$action.'&'.$param;
+        return '/?'.$urlslice.'='.$ctrl.'/'.$action.$param;
     }
 }
 
+/**
+ * @todo ajax返回消息
+ * @param Int $code
+ * @param string $msg
+ * @param array $data
+ */
 function ajaxMsg( $code , $msg = 'success' , $data = array() ){
     $return_data = array(
         'code' => $code ,
@@ -185,4 +191,13 @@ function ajaxMsg( $code , $msg = 'success' , $data = array() ){
     
     echo json_encode($return_data);
     exit();
+}
+
+/**
+ * @todo 跳转URL
+ * @param string $url
+ */
+function redirect($url){
+	header('Location:'.$url);
+	exit();
 }

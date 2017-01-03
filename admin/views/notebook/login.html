@@ -41,7 +41,7 @@
         var password = $('input[name=password]').val();
         if(username!= '' && username != 'username' && password != '' && password!= 'Password'){
             $.ajax({
-                url:'{{ submiturl }}',
+                url:"/admin{{ url('default','login') }}",
                 type:'POST', 
                 dataType:'json',
                 data:{
@@ -64,6 +64,7 @@
             alert('请填写用户名密码！');
         }
     }
+    
 </script>
 	
 </head>

@@ -3,8 +3,8 @@ namespace admin\model;
 
 use core\lib\model;
 
-class userModel extends model{
-    public $table = 'user';
+class adminuserModel extends model{
+    public $table = 'admin_user';
     
     public function insertUser($datas){
         return $this -> insert($this->table, $datas);
@@ -13,5 +13,10 @@ class userModel extends model{
     public function getUser( $username ){
         return $this->get($this->table,'*',array('username ' => $username));
     }
+    
+    public function getUsergroupId($username){
+    	return $this->get($this->table,'groupid',array('username ' => $username));
+    }
+    
     
 }

@@ -1,9 +1,9 @@
 <?php
 namespace core\lib\drive\session;
 class phpiredis implements \SessionHandlerInterface{
-    private $redis;     // Redis 链接
-    private $config;    // Redis 配置
-    private $_key_prefix='s_';   //前缀
+    private $redis;     		    // Redis 链接
+    private $config;    			// Redis 配置
+    private $_key_prefix='s_';		//前缀
     
     public function __construct($option){
         if(!function_exists('phpiredis_connect')){
@@ -47,9 +47,7 @@ class phpiredis implements \SessionHandlerInterface{
         if(empty($this->redis) || !is_resource($this->redis) ){
             \core\lib\log::log( ' close redis resource is faild'.PHP_EOL , 'session_error' );
         }
-        if(! phpiredis_disconnect($this->redis)){
-            \core\lib\log::log(' phpiredis_disconnect faild'.PHP_EOL , 'session_error' );
-        }
+        phpiredis_disconnect($this->redis);
     }
     public function read($id){
         return phpiredis_command_bs($this->redis,array('GET',$this->_key_prefix.$id));
@@ -61,7 +59,7 @@ class phpiredis implements \SessionHandlerInterface{
         ));
     }
     public function destroy($id){
-        $this->close();
+    	phpiredis_command_bs($this->redis,array('DEL',$this->_key_prefix.$id));
     }
     public function gc($maxlifetime){
         //Redis 自动销毁
