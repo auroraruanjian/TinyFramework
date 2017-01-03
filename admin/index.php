@@ -3,11 +3,12 @@
     define('DS',DIRECTORY_SEPARATOR);           //分隔符
    
     define('NICK', realpath('..'));
-    define('CORE',NICK.DS.'core');
+    define('CORE',NICK.DS.'core');              //Core 核心目录
     define('APP',NICK.DS.'admin');              //APP 核心目录
-    define('MODULE','admin');
+    define('MODULE','admin');                   //Model 类目录名称
     
-    define('DEBUG', true);
+    define('DEBUG', true);                      //是否 调试模式
+    define('RECORD_LOG',false);                 //是否记录日志
     
     require_once NICK.DS.'vendor'.DS.'autoload.php';
     

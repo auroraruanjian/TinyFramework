@@ -3,7 +3,8 @@ namespace core;
 function_exists('date_default_timezone_set') && date_default_timezone_set('Asia/Shanghai');
 
 class A{
-    public static $classMap = array();                      //已经加载的类库
+    public static $classMap = array();                      //已经加载的类名
+    public static $classObjects = array();                  //所有单例类的数组集合
     
     static public function run($config){
         $oConfig = array(
@@ -44,6 +45,47 @@ class A{
                 return false;
             }
         }
+    }
+    
+    /**
+     * @todo 返回一个类的单例
+     * @param String $sClassName  类名
+     * @param String $param       参数
+     */
+    static function singleton( $sClassName , $param = '' ){
+    	if( empty( $param ) ){
+    		if( isset( self::$classObjects[$sClassName] ) ){
+    			return self::$classObjects[$sClassName];
+    		}else{
+    		    return self::register( new $sClassName() , $sClassName );
+    		}
+    	}else{
+    		if( isset( self::$classObjects[ $sClassName .'_'. md5(serialize($param)) ] ) ){
+    			return self::$classObjects[ $sClassName .'_'. md5(serialize($param)) ];
+    		}else{
+    		    return self::register( new $sClassName( $param ) , $sClassName . '_' . md5( serialize( $param ) ) );
+    		}
+    	}
+    	
+    }
+    
+    /**
+     * @todo 注册一个单例对象
+     * @param Class $obj            类的实例对象
+     * @param string $sClassName    类名
+     */
+    static function register( $obj , $sClassName = NULL ){
+    	if( !is_object($obj) ){
+    		throw new \Exception( '注册失败，对象类型错误！' );
+    	}
+    	
+    	if( is_null($sClassName) ){
+    		$sClassName = get_class( $obj );
+    	}
+    	
+    	self::$classObjects[$sClassName] = $obj;
+    	
+    	return $obj;
     }
     
 }

@@ -41,7 +41,7 @@
         var password = $('input[name=password]').val();
         if(username!= '' && username != 'username' && password != '' && password!= 'Password'){
             $.ajax({
-                url:"/admin{{ url('default','login') }}",
+                url:"{{ url('default','login') }}",///admin
                 type:'POST', 
                 dataType:'json',
                 data:{
@@ -75,7 +75,7 @@
 		<div id="wrappermiddle">
 
 			<h2>Login</h2>
-            <form action="{{ submiturl }}" method='post' onsubmit='return false;'>
+            <form action="{{ url('default','login') }}" method='post' onsubmit='return false;'>
 			<div id="username_input">
 
 				<div id="username_inputleft"></div>

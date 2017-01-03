@@ -172,7 +172,7 @@ function url( $ctrl , $action , $param = ''){
 
     }else if($type == 2){
         $urlslice = core\lib\conf::get('URLSLICE', 'route');
-        return '/?'.$urlslice.'='.$ctrl.'/'.$action.$param;
+        return './?'.$urlslice.'='.$ctrl.'/'.$action.$param;
     }
 }
 
@@ -200,4 +200,82 @@ function ajaxMsg( $code , $msg = 'success' , $data = array() ){
 function redirect($url){
 	header('Location:'.$url);
 	exit();
+}
+
+/**
+ * @todo 获取客户端真实IP
+ * @return String IP 返回客户端真实IP地址
+ */
+function getRealIP() {
+    static $realip = NULL;
+    
+    if ($realip !== NULL) {
+        return $realip;
+    }
+
+    if (isset($_SERVER)) {
+        if (isset($_SERVER['HTTP_X_REAL_IP'])) {
+            $arr = explode(',', $_SERVER['HTTP_X_REAL_IP']);
+            /* 取X-Forwarded-For中第一个非unknown的有效IP字符串 */
+            foreach ($arr AS $ip) {
+                $ip = trim($ip);
+                if ($ip != 'unknown') {
+                    $realip = $ip;
+                    break;
+                }
+            }
+        } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $arr = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+            /* 取X-Forwarded-For中第一个非unknown的有效IP字符串 */
+            foreach ($arr AS $ip) {
+                $ip = trim($ip);
+                if ($ip != 'unknown') {
+                    $realip = $ip;
+                    break;
+                }
+            }
+        } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
+            $realip = $_SERVER['HTTP_CLIENT_IP'];
+        } else {
+            if (isset($_SERVER['REMOTE_ADDR'])) {
+                $realip = $_SERVER['REMOTE_ADDR'];
+            } else {
+                $realip = '0.0.0.0';
+            }
+        }
+    } else {
+        if (getenv('HTTP_X_FORWARDED_FOR')) {
+            $realip = getenv('HTTP_X_FORWARDED_FOR');
+        } elseif (getenv('HTTP_CLIENT_IP')) {
+            $realip = getenv('HTTP_CLIENT_IP');
+        } else {
+            $realip = getenv('REMOTE_ADDR');
+        }
+    }
+    preg_match("/[\d\.]{7,15}/", $realip, $onlineip);
+    $realip = !empty($onlineip[0]) ? $onlineip[0] : '0.0.0.0';
+    return $realip;
+}
+
+
+/**
+ * @todo 获取当前URL的完整地址
+ * @return string	完整URL地址
+ */
+function getUrl($bShowFullUri = TRUE, $bAllowPort = TRUE) {
+    $temp_url = '';
+    if (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) != 'off') {
+        $temp_url = 'https://';
+    } else {
+        $temp_url = 'http://';
+    }
+    $temp_url .= $_SERVER['SERVER_NAME'];
+    if (TRUE == $bAllowPort && intval($_SERVER['SERVER_PORT']) != 80) {
+        $temp_url .= ':' . $_SERVER["SERVER_PORT"];
+    }
+    if ($bShowFullUri == FALSE) {
+        return $temp_url;
+    }
+    $temp_url .= $_SERVER["REQUEST_URI"];
+    return $temp_url;
 }

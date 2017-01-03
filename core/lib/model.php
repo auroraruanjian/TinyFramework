@@ -2,10 +2,12 @@
 namespace core\lib;
 use core\lib\conf;
 class model extends \medoo{
-    public function __construct(){
-        $option = conf::all('database');
+    public function __construct( $newoption = array() ){
+        $option = conf::all('testDB');
         
-        parent::__construct($option);
+        $newoption = array_merge($option,$newoption);
+        
+        parent::__construct($newoption);
         
         /*
         $database = conf::all('database');

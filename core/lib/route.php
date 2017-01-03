@@ -3,11 +3,12 @@ namespace core\lib;
 class route{
     static public $ctrl;
     static public $action;
+    static public $prefix;
     
     public function __construct(){
         
         $type=conf::get('TYPE', 'route');
-        $prefix=conf::get('PREFIX', 'route');
+        self::$prefix=conf::get('PREFIX', 'route');
         
         if($type ==1 ){
             $this->_setDsRouter();
@@ -15,8 +16,8 @@ class route{
             $this->_setArgRouter();
         }
         
-        if( !empty($prefix) ){
-            self::$action = $prefix . ucfirst( self::$action ) ;
+        if( !empty(self::$prefix) ){
+            self::$action = self::fixName(self::$action);
         }
     }
     
@@ -102,6 +103,14 @@ class route{
             \core\lib\log::log('cannot found '.$ctrlfile,'router_error');
             throw new \Exception("找不到文件 ".$ctrlfile);
         }
+    }
+    
+    static public function fixName($name){
+        return self::$prefix . ucfirst( $name );
+    }
+    
+    static public function unFixName($name){
+    	return lcfirst(str_replace( self::$prefix , '', $name));
     }
     
     /**

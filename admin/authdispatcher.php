@@ -17,11 +17,16 @@ class authdispatcher extends dispatcher{
         //以后需要实现，判断用户组是否禁用，菜单是否禁用，等功能
         $result = $this->checkMenuAccess( route::$ctrl , route::$action );
         if( $result == -1 ){
-        	redirect('/admin'.url('default','index'));
+        	redirect( url('default','index') );//'/admin'.
         }else if($result == 0 ){
 			$this -> halt( '您没有权限！' );
         }
         
+        //记录用户访问记录
+        if( RECORD_LOG ){
+            $adminlog = \core\A::singleton( "\admin\model\adminlogModel" );
+            $adminlog -> insertLog( 'admin:'.$_SESSION['username'] , 'admin:'.$_SESSION['username'] , route::$ctrl , route::unFixName( route::$action ) , 1 );
+        }
     }
     public  function afterAction(){
         
@@ -31,7 +36,8 @@ class authdispatcher extends dispatcher{
      *@todo 检查 菜单访问权限
      */
     public function checkMenuAccess( $control , $action ){
-    	$action = lcfirst(str_replace('action', '', $action));
+//     	$action = lcfirst(str_replace('action', '', $action));
+    	$action = route::unFixName( $action );
 
     	$iuserid = !empty( $_SESSION['userid'] ) ? $_SESSION['userid'] : '0' ;
     	
