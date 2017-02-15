@@ -19,4 +19,9 @@ class model extends \medoo{
         }
         */
     }
+    
+    /*获取分页数据*/
+    public function getPageResult(){
+    	
+    }
 }

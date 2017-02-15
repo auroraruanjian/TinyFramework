@@ -32,6 +32,19 @@ class defaultCtrl extends \core\lib\baseCtrl  {
         
         $data = 'hello world ';
         
+        //$GLOBALS['oCcahce'] -> save( 'APC' , 'data' , $data , 9000 );
+        
+        $newdata = $GLOBALS['oCcahce'] -> get( 'APC' , 'data' );
+        
+        if ( ! $newdata ){
+        	
+            $userModel = new adminuserModel();
+            
+            $result = $GLOBALS['oCcahce'] -> cachedFunction( 'APC' , array( &$userModel , 'getUser' ) ,array('admin') ,60 );
+            
+            p($result);
+        }
+                
         $GLOBALS['oViews']->assign('data',$data);
         
         $GLOBALS['oViews']->display('notebook/index.html');

@@ -1,22 +1,36 @@
 <?php
 namespace core\lib\drive\cache;
-class APC{
+class APC extends base{
     public function __construct(){
-        if( ! is_supported() ){
-            \core\lib\log::log('APC','cache_error');
-        }
+        parent::__construct();
     }
     
     public function get( $id ){
-        $value = apc_fetch( $id );
-        p($value);
-    }
-    
-    public function save($id,$value,$ttl){
+        
+        if( !is_string( $id ) ) return false;
+        
+        return  apc_fetch( $id );
         
     }
     
+    public function save( $id , $value , $ttl = 0 ){
+        
+        if( !is_string( $id ) && !is_numeric($ttl) ) return false;
+        
+        if( !is_string( $value ) ){
+
+            $value = unserialize( $value );
+        
+        }
+        
+        apc_store($id, $value , $ttl);
+    }
+    
     public function delete($id){
+        
+        if( !is_string($id) ) return false;
+        
+        apc_delete( $id );
         
     }
     
@@ -30,6 +44,10 @@ class APC{
     
     public function clean(){
         
+        apc_clear_cache('user');
+        
+        return apc_clear_cache();
+    
     } 
     
     public function cache_info(){

@@ -19,7 +19,7 @@ class authdispatcher extends dispatcher{
         if( $result == -1 ){
         	redirect( url('default','index') );//'/admin'.
         }else if($result == 0 ){
-			$this -> halt( '您没有权限！' );
+			//$this -> halt( "<script>alert('请登陆！');window.location.href='./".url('default','login')."'</script>" );
         }
         
         //记录用户访问记录

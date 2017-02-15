@@ -21,11 +21,13 @@ class usermenuModel extends model{
     	*/
     	$control = $this->quote($control);
     	$action  = $this->quote($action);
-
     	//用户未登陆
     	if( 0 == $userid ){
     		//检查菜单是否可任何人查看
-    		$result = $this->query("SELECT count(*) as count FROM {$this->table} as um WHERE find_in_set('*',um.allowusergroup)  AND um.control={$control} AND um.action={$action} Limit 1") -> fetch();
+    		$query = $this->query("SELECT count(*) as count FROM {$this->table} as um WHERE find_in_set('*',um.allowusergroup)  AND um.control={$control} AND um.action={$action} Limit 1") ;
+    		if($query != false){
+    			$result = $query-> fetch();
+    		}
     	}else{
     	    //检查 用户 是否有权限查看菜单
     		$userid  = $this->quote( $userid );
@@ -35,7 +37,7 @@ class usermenuModel extends model{
     		$result = $this->query($sql) -> fetch();
     	}
     	
-    	if($result['count'] >0){
+    	if(!empty($result['count']) && $result['count'] >0){
     		return 1;
     	}
     	return 0;

@@ -38,6 +38,9 @@
     //SESSION初始化
     $GLOBALS['oSession'] = new \core\lib\session();
     
+    //Cache缓存初始化
+    $GLOBALS['oCcahce'] = new \core\lib\Cache();
+    
     $config = array(
         'dispatcher' => 'admin\authdispatcher',           //调度器配置
     );
