@@ -14,6 +14,12 @@ class usermenuModel extends model{
      * @return int 如果有权限返回1，无权限返回0
      */
     public function checkMenuAccess($userid,$control,$action){
+        
+        //如果已经登录，再次打开 登录页，则跳转到主页
+        if( $control =='default' && in_array($action,array('login')) && $iuserid != -1 ){
+            return -1;
+        }
+        
     	/*
     	SELECT * FROM admin_usermenu as um
     	INNER JOIN admin_user as au  ON find_in_set('*',um.allowusergroup) OR find_in_set('1',um.allowusergroup)
@@ -21,10 +27,12 @@ class usermenuModel extends model{
     	*/
     	$control = $this->quote($control);
     	$action  = $this->quote($action);
+    	$filed = 'um.title,um.descript,um.control,um.action,um.is_enable,um.rec_log';
+    	
     	//用户未登陆
-    	if( 0 == $userid ){
+    	if( -1 == $userid ){
     		//检查菜单是否可任何人查看
-    		$query = $this->query("SELECT count(*) as count FROM {$this->table} as um WHERE find_in_set('*',um.allowusergroup)  AND um.control={$control} AND um.action={$action} Limit 1") ;
+    		$query = $this->query("SELECT {$filed} FROM {$this->table} as um WHERE find_in_set('*',um.allowusergroup)  AND um.control={$control} AND um.action={$action} AND um.is_enable=1 Limit 1") ;
     		if($query != false){
     			$result = $query-> fetch();
     		}
@@ -32,15 +40,17 @@ class usermenuModel extends model{
     	    //检查 用户 是否有权限查看菜单
     		$userid  = $this->quote( $userid );
 
-    		$sql="SELECT count(*) as count FROM {$this->table} as um INNER JOIN admin_user as au ON find_in_set('*',um.allowusergroup) OR find_in_set(au.groupid,um.allowusergroup) WHERE um.control={$control} AND um.action={$action} AND au.userid={$userid} Limit 1";
+    		$sql="SELECT {$filed} FROM {$this->table} as um INNER JOIN admin_user as au ON find_in_set('*',um.allowusergroup) OR find_in_set(au.groupid,um.allowusergroup) WHERE um.control={$control} AND um.action={$action} AND au.userid={$userid} AND um.is_enable=1 Limit 1";
     		
     		$result = $this->query($sql) -> fetch();
     	}
     	
-    	if(!empty($result['count']) && $result['count'] >0){
-    		return 1;
+    	if( !empty($result) ){
+    	    
+    		return $result;         
+    	
     	}
-    	return 0;
+    	return 0;              //请登录
     }
     
     /**

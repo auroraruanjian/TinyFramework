@@ -8,7 +8,7 @@
     define('MODULE','admin');                   //Model 类目录名称
     
     define('DEBUG', true);                      //是否 调试模式
-    define('RECORD_LOG',false);                 //是否记录日志
+    define('RECORD_LOG',true);                 //是否记录日志
     
     require_once NICK.DS.'vendor'.DS.'autoload.php';
     
@@ -31,15 +31,15 @@
     spl_autoload_register('\core\A::load');
     
     //初始化视图层
-    $GLOBALS['oViews'] = new \core\lib\views();
+    $GLOBALS['oViews'] = \core\A::singleton('\core\lib\views');
     
     $GLOBALS['oViews']->assign('templatepath',DS.'admin'.DS.'views'.DS.'notebook');     //配置 资源文件 位置
     
     //SESSION初始化
-    $GLOBALS['oSession'] = new \core\lib\session();
+    $GLOBALS['oSession'] = \core\A::singleton('\core\lib\session');
     
     //Cache缓存初始化
-    $GLOBALS['oCcahce'] = new \core\lib\Cache();
+    $GLOBALS['oCcahce'] = \core\A::singleton('\core\lib\Cache');
     
     $config = array(
         'dispatcher' => 'admin\authdispatcher',           //调度器配置

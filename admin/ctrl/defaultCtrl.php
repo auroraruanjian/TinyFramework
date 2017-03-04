@@ -1,6 +1,8 @@
 <?php
 namespace admin\ctrl;
 use admin\model\adminuserModel;
+use core\lib\conf;
+use common\model\configModel;
 
 class defaultCtrl extends \core\lib\baseCtrl  {
     
@@ -31,20 +33,43 @@ class defaultCtrl extends \core\lib\baseCtrl  {
     public function actionIndex(){
         
         $data = 'hello world ';
-        
-        //$GLOBALS['oCcahce'] -> save( 'APC' , 'data' , $data , 9000 );
+        /*
+        APC缓存测试
+        $GLOBALS['oCcahce'] -> save( 'APC' , 'data' , $data , 9000 );
         
         $newdata = $GLOBALS['oCcahce'] -> get( 'APC' , 'data' );
-        
-        if ( ! $newdata ){
         	
-            $userModel = new adminuserModel();
-            
-            $result = $GLOBALS['oCcahce'] -> cachedFunction( 'APC' , array( &$userModel , 'getUser' ) ,array('admin') ,60 );
-            
-            p($result);
-        }
-                
+        //APC函数返回值测试
+        $userModel = new adminuserModel();
+        
+        $result = $GLOBALS['oCcahce'] -> cachedFunction( 'APC' , array( &$userModel , 'getUser' ) ,array('admin') ,60 );
+        
+        p($result);
+        */
+        
+        /*
+        //配置插入测试
+        $configArr = [
+            'parentid'          => 0,
+            'configkey'         => 'inserttest', 
+            'configvalue'       => '', 
+            'defaultvalue'      => '',
+            'configvaluetype'   => '',
+            'forminputtype'     => '',
+            'channelid'         => 0,
+            'title'             => '测试', 
+            'description'       => '测试', 
+            'isdisabled'        => 1, 
+        ];
+        
+        $config = new \common\model\configModel();
+        
+        $config -> insertConfig($configArr);
+        
+        $configval = $config->delOneByKey('inserttest');
+        p($configval);
+        */
+        
         $GLOBALS['oViews']->assign('data',$data);
         
         $GLOBALS['oViews']->display('notebook/index.html');

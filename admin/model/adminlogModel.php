@@ -16,7 +16,7 @@ class adminlogModel extends model{
     /**
      * @todo 写入logo
      */
-    public function  insertLog( $title , $content , $control , $action , $typeid = 0){
+    public function  insertLog( $title , $content , $control , $action , $typeid = 1 ){
         
         $datas = array(
         	'typeid'        => intval( $typeid ),
@@ -26,14 +26,13 @@ class adminlogModel extends model{
             'times'         => date('Y-m-d H:i:s', time() ) ,
             'querystring'   => getUrl() ,                          //完整URL
             'controller'    => $control ,
-            'actioner'      => $action ,
+            'action'        => $action ,
             'title'         => $title ,
             'content'       => $content ,
             'requeststring' => serialize($_REQUEST) ,
         );
         
-        $result = $this->insert($this->table, $datas) ;
-        
+        return $this->insert($this->table, $datas) ;
     }
     
     /**

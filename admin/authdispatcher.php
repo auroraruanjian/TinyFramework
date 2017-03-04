@@ -11,40 +11,52 @@ class authdispatcher extends dispatcher{
         parent::__construct();
     }
     
-    public  function beforAction(){
-    	//如果用户未登陆，跳转到登陆页面
+    /**
+     * Action运行之前运行
+     */
+    public function beforAction(){
+        
+    	$iuserid = isset( $_SESSION['userid'] ) ? $_SESSION['userid'] : -1 ;
     	
-        //以后需要实现，判断用户组是否禁用，菜单是否禁用，等功能
-        $result = $this->checkMenuAccess( route::$ctrl , route::$action );
+    	//如果用户未登陆，跳转到登陆页面
+        $result = $this->checkMenuAccess( $iuserid , route::$ctrl , route::$action );
+        
         if( $result == -1 ){
-        	redirect( url('default','index') );//'/admin'.
+
+            redirect( url('default','index') );//'/admin'.
+        
         }else if($result == 0 ){
-			//$this -> halt( "<script>alert('请登陆！');window.location.href='./".url('default','login')."'</script>" );
+
+            $this -> halt( "<script>alert('请登陆！');window.location.href='./".url('default','login')."'</script>" );
+        
         }
         
         //记录用户访问记录
-        if( RECORD_LOG ){
+        if( RECORD_LOG && $result['rec_log']==1 && $iuserid > -1 ){
+
             $adminlog = \core\A::singleton( "\admin\model\adminlogModel" );
-            $adminlog -> insertLog( 'admin:'.$_SESSION['username'] , 'admin:'.$_SESSION['username'] , route::$ctrl , route::unFixName( route::$action ) , 1 );
+            
+            $adminlog -> insertLog( $result['title'] , $result['descript'] , route::$ctrl , route::unFixName( route::$action ) , 1 );
         }
+        
     }
+    
+    /**
+     * Action运行之前运行
+     */
     public  function afterAction(){
         
     }
     
     /**
-     *@todo 检查 菜单访问权限
+     *检查 菜单访问权限
+     *@param String $control 控制器名称
+     *@param String $action  方法名
+     *@return －1:跳转首页 0:重新登陆 返回数据表示正常访问
      */
-    public function checkMenuAccess( $control , $action ){
-//     	$action = lcfirst(str_replace('action', '', $action));
+    public function checkMenuAccess( $iuserid , $control , $action ){
+        
     	$action = route::unFixName( $action );
-
-    	$iuserid = !empty( $_SESSION['userid'] ) ? $_SESSION['userid'] : '0' ;
-    	
-    	//如果已经登录，再次打开 登录页，则跳转到主页
-    	if( $control =='default' && in_array($action,array('login')) && $iuserid != 0 ){
-    		return -1;
-    	}
     	
         $oUsermenu = new usermenuModel();
         
