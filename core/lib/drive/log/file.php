@@ -8,19 +8,19 @@ class file{
         $this->path = $config['path'];
     }
     
-    public function log($message,$file = 'log'){
-        $logpath = $this->path.date('YmdH').'/';
+    public function log($message,$param = array('log','') ){
+        $logpath = $this->path.$param[1].DS.date('YmdH').DS;
         
         if(!is_dir($logpath)){
             mkdir($logpath,0777,true);
         }
-        $logfilename = $logpath.$file.'.log';
+        $logfilename = $logpath.$param[0].'.log';
         if(!file_exists($logfilename)){
             touch($logfilename);
             chmod($logfilename,0777);
         }
         
 //         p($logpath.$file.'.php');
-        file_put_contents($logfilename, date('Y-m-d H:i:s') .'   '. json_encode($message) . PHP_EOL , FILE_APPEND);
+        file_put_contents($logfilename, date('Y-m-d H:i:s') .'   '. $message . PHP_EOL , FILE_APPEND);
     }
 }

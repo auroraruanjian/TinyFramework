@@ -7,16 +7,16 @@ class usermenuModel extends model{
     public $table = 'admin_usermenu';
     
     /**
-     * @todo 检查用户是否有权限访问菜单
+     * 检查用户是否有权限访问菜单
      * @param int $userid 用户ID
      * @param String $control 控制器名
      * @param String $action 方法名
-     * @return int 如果有权限返回1，无权限返回0
+     * @return Mixed 如果有权限返回菜单详情，无权限重新登录返回0，无权限 返回首页返回 －1
      */
     public function checkMenuAccess($userid,$control,$action){
         
         //如果已经登录，再次打开 登录页，则跳转到主页
-        if( $control =='default' && in_array($action,array('login')) && $iuserid != -1 ){
+        if( $control =='default' && in_array($action,array('login')) && $userid != -1 ){
             return -1;
         }
         
@@ -27,30 +27,41 @@ class usermenuModel extends model{
     	*/
     	$control = $this->quote($control);
     	$action  = $this->quote($action);
-    	$filed = 'um.title,um.descript,um.control,um.action,um.is_enable,um.rec_log';
+    	$filed = 'um.title,um.descript,um.control,um.action,um.is_enable,um.rec_log,um.is_enable';
     	
+    	$result = null;
     	//用户未登陆
     	if( -1 == $userid ){
     		//检查菜单是否可任何人查看
-    		$query = $this->query("SELECT {$filed} FROM {$this->table} as um WHERE find_in_set('*',um.allowusergroup)  AND um.control={$control} AND um.action={$action} AND um.is_enable=1 Limit 1") ;
-    		if($query != false){
-    			$result = $query-> fetch();
-    		}
+    		$sql = $this->query("SELECT {$filed} FROM {$this->table} as um WHERE find_in_set('*',um.allowusergroup)  AND um.control={$control} AND um.action={$action} Limit 1") ;
+    		
+    		$result = $this->query($sql)-> fetch();
+    		
     	}else{
     	    //检查 用户 是否有权限查看菜单
     		$userid  = $this->quote( $userid );
 
-    		$sql="SELECT {$filed} FROM {$this->table} as um INNER JOIN admin_user as au ON find_in_set('*',um.allowusergroup) OR find_in_set(au.groupid,um.allowusergroup) WHERE um.control={$control} AND um.action={$action} AND au.userid={$userid} AND um.is_enable=1 Limit 1";
+    		$sql="SELECT {$filed} FROM {$this->table} as um INNER JOIN admin_user as au ON find_in_set('*',um.allowusergroup) OR find_in_set(au.groupid,um.allowusergroup) WHERE um.control={$control} AND um.action={$action} AND au.userid={$userid} Limit 1";
     		
-    		$result = $this->query($sql) -> fetch();
+    		$result = $this->query($sql)->fetch();
+    		
     	}
     	
-    	if( !empty($result) ){
-    	    
-    		return $result;         
-    	
+    	if( empty($result) ){
+    	    if( $userid != -1 ){
+    	       //菜单不存
+                return -1;
+    	    }else{
+    	       //重新登录
+    	       return 0;
+    	    }
+    	}else{
+    		if( $result['is_enable']!=1 && $userid != -1 ){
+    		    //没有权限，跳转首页
+    			return -1;
+    		}
     	}
-    	return 0;              //请登录
+    	return $result;
     }
     
     /**

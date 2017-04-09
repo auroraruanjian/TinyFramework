@@ -2,6 +2,6 @@
 return array(
         'DRIVE' => 'file',
         'option' => array(
-                'path' => NICK.'/log/',
+            'path' => NICK.DS.'log'.DS,
         )
 );

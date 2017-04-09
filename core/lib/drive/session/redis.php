@@ -42,10 +42,10 @@ class redis implements \SessionHandlerInterface{
         $this -> conn = new \redis();
         
         if(! $this -> conn -> connect( $this->_config['save_path']['host'] , $this->_config['save_path']['port'] )  ){
-            \core\lib\log::log( date('Y-m-d H:m:s',time()).' redis host'.$this->_config['save_path']['host'].$this->_config['save_path']['port'].' connect faild'.PHP_EOL , 'redis' );
+            \core\lib\log::log( date('Y-m-d H:m:s',time()).' redis host'.$this->_config['save_path']['host'].$this->_config['save_path']['port'].' connect faild'.PHP_EOL , array('session_error','session') );
         }
         if( ! $this -> conn -> select( $this->_config['save_path']['database'] )   ){
-            \core\lib\log::log( date('Y-m-d H:m:s',time()).' redis select database'.$this->_config['save_path']['database'].' faild'.PHP_EOL , 'redis' );
+            \core\lib\log::log( date('Y-m-d H:m:s',time()).' redis select database'.$this->_config['save_path']['database'].' faild'.PHP_EOL , array('session_error','session') );
         }
         
         $this -> sessionid = session_id();

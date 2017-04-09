@@ -9,7 +9,7 @@ abstract class base{
      */
     public function __construct(){
         if( ! $this -> is_supported() ){
-            \core\lib\log::log('不支持此驱动'.$this->$cache_type,'cache_error');
+            \core\lib\log::log('不支持此驱动'.$this->$cache_type,array('cache_error','cache') );
             throw new \Exception('不支持此驱动'.$this->$cache_type);
         }
     }

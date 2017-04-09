@@ -14,9 +14,11 @@ class conf{
                     self::$conf[$file] = $conf;
                     return $conf[$name];
                 }else{
+                    \core\lib\log::log('没有这个配置项'.$name,array('config_error','config'));
                     throw  new \Exception('没有这个配置项'.$name);
                 }
             }else{
+                \core\lib\log::log('找不到配置文件'.$file,array('config_error','config'));
                 throw new  \Exception('找不到配置文件'.$file);
             }
         }
@@ -32,6 +34,7 @@ class conf{
                 self::$conf[$file] = $conf;
                 return $conf;
             }else{
+                \core\lib\log::log('找不到配置文件'.$file,array('config_error','config'));
                 throw new  \Exception('找不到配置文件'.$file);
             }
         }

@@ -1,6 +1,6 @@
 <?php
 /** 
- * @todo 输出变量，调试函数
+ * 输出变量，调试函数
  * dump 依赖第三方类库  symfony/var-dumper
  * @param $var  变量
  * @param $type int 类型 1和2
@@ -20,7 +20,7 @@ function p($var,$type=1){
 }
 
 /**
- * @todo 截取指定长度字符串，尾后用 特定字符代替
+ * 截取指定长度字符串，尾后用 特定字符代替
  * @param $str    需要截取的字符串
  * @param $length 需要截取的长度
  * @param $suff   补充字符
@@ -35,19 +35,23 @@ function count_str($str,$length,$suff='...'){
 }
 
 /**
- *@todo 获取GET参数 
+ * 获取GET参数 
+ * @param String $name    需要从GET中获取的KEY
+ * @param String $default 默认值，如果GET获取不到 $name  
+ * @param String $type    [int,string,boolean]
  */
 function get($name,$default=false,$type=false){
     if(isset($_GET[$name])){
         if($type){
             switch($type){
                 case 'int':
-                    if(is_numeric($_GET[$name])){
-                        return $_GET[$name];
-                    }else{
-                        return $default;
-                    }
-                    break;
+                    return intval($_GET[$name]);
+                case 'string':
+                    //因为在程序底层已经 转义 处理，这里不再多重转义
+                    //return addslashes_deep($_GET[$name]);
+                    return $_GET[$name];
+                case 'boolean':
+                    return $_GET[$name] ? true : false ;
                 default:
                     return $default;
             }
@@ -67,12 +71,13 @@ function post($name,$default=false,$type=false){
         if($type){
             switch($type){
                 case 'int':
-                    if(is_numeric($_POST[$name])){
-                        return $_POST[$name];
-                    }else{
-                        return $default;
-                    }
-                    break;
+                    return intval($_POST[$name]);
+                case 'string':
+                    //因为在程序底层已经 转义 处理，这里不再多重转义
+                    //return addslashes_deep($_GET[$name]);
+                    return $_POST[$name];
+                case 'boolean':
+                    return $_POST[$name] ? true : false ;
                 default:
                     return $default;
             }
@@ -83,7 +88,6 @@ function post($name,$default=false,$type=false){
         return $default;
     }
 }
-
 
 /**
  * decrypt AES 256
@@ -163,10 +167,14 @@ if ( ! function_exists('is_php'))
 
 
 /**
- * @todo 创建URL链接
- * @param
+ * 创建URL链接
+ * @param String $ctl       控制器
+ * @param String $action    行为方法
+ * @param Array  $param     参数 
  */
-function url( $ctrl , $action , $param = ''){
+function url( $ctrl , $action , $paramarr = array() ){
+    $param = !empty($paramarr)? create_url_param( $paramarr ) : '';
+    
     $type=core\lib\conf::get('TYPE', 'route');
     if($type == 1){
 
@@ -175,9 +183,22 @@ function url( $ctrl , $action , $param = ''){
         return './?'.$urlslice.'='.$ctrl.'/'.$action.$param;
     }
 }
+/**
+ * 创建URL参数
+ * @param Array $param 参数
+ * @return String 返回参数链接
+ */
+function create_url_param( $param ){
+    $link = '';
+    foreach( $param as $key => $value ){
+    	$link += "&{$key}={$value}";
+    }
+	return $link;
+}
+
 
 /**
- * @todo ajax返回消息
+ * ajax返回消息
  * @param Int $code
  * @param string $msg
  * @param array $data
@@ -194,7 +215,7 @@ function ajaxMsg( $code , $msg = 'success' , $data = array() ){
 }
 
 /**
- * @todo 跳转URL
+ * 跳转URL
  * @param string $url
  */
 function redirect($url){
@@ -203,7 +224,7 @@ function redirect($url){
 }
 
 /**
- * @todo 获取客户端真实IP
+ * 获取客户端真实IP
  * @return String IP 返回客户端真实IP地址
  */
 function getRealIP() {
@@ -259,7 +280,9 @@ function getRealIP() {
 
 
 /**
- * @todo 获取当前URL的完整地址
+ * 获取当前URL的完整地址
+ * @param boolean $bShowFullUri 是否显示完整URL，默认显示完整
+ * @param boolean $bAllowPort   是否显示端口号
  * @return string	完整URL地址
  */
 function getUrl($bShowFullUri = TRUE, $bAllowPort = TRUE) {
@@ -278,4 +301,98 @@ function getUrl($bShowFullUri = TRUE, $bAllowPort = TRUE) {
     }
     $temp_url .= $_SERVER["REQUEST_URI"];
     return $temp_url;
+}
+
+/**
+ * 转义字符串or数组
+ * @param mixed $obj 需要转义的字符串OR数组
+ * @param boolean $force 是否强制转义
+ * @param boolean $strip 是否需要先去掉之前转义，重新转义
+ */
+function addslashes_deep( $obj , $force = false , $strip = false ){
+    if( !get_magic_quotes_gpc() || $force ){
+    	if( is_array( $obj ) ){
+    		$obj = array_map( 'addslashes_deep' , $obj );
+    	}else if( is_object($obj) ){
+    		foreach ( $obj as $key => $val ){
+    			$obj -> $key = addslashes_deep( $val );
+    		}
+    	}else{
+    		$obj = addslashes(  $strip? stripslashes($obj) : $obj );
+    	}
+    }
+    return $obj;
+}
+
+/**
+ * 反转义
+ * @param mixed $str 需要反转义的字符串OR数组 
+ */
+function stripslashes_deep( $obj , $force = false , $strip = false ){
+    if( !get_magic_quotes_gpc() || $force ){
+        if( is_array( $obj ) ){
+            $obj = array_map( 'stripslashes_deep' , $obj );
+        }else if( is_object($obj) ){
+            foreach ( $obj as $key => $val ){
+                $obj -> $key = stripslashes_deep( $val );
+            }
+        }else{
+            $obj = stripslashes( $obj );
+        }
+    }
+    return $obj;
+}
+
+//Remove the exploer'bugXSS
+function RemoveXSS($val) {
+    // remove all non-printable characters. CR(0a) and LF(0b) and TAB(9) are allowed
+    // this prevents some character re-spacing such as <java\0script>
+    // note that you have to handle splits with \n, \r, and \t later since they *are* allowed in some inputs
+    $val = preg_replace('/([\x00-\x08,\x0b-\x0c,\x0e-\x19])/', '', $val);
+    // straight replacements, the user should never need these since they're normal characters
+    // this prevents like <IMG SRC=@avascript:alert('XSS')>
+    $search = 'abcdefghijklmnopqrstuvwxyz';
+    $search .= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $search .= '1234567890!@#$%^&*()';
+    $search .= '~`";:?+/={}[]-_|\'\\';
+    for ($i = 0; $i < strlen($search); $i++) {
+        // ;? matches the ;, which is optional
+        // 0{0,7} matches any padded zeros, which are optional and go up to 8 chars
+
+        // @ @ search for the hex values
+        $val = preg_replace('/(&#[xX]0{0,8}'.dechex(ord($search[$i])).';?)/i', $search[$i], $val); // with a ;
+        // @ @ 0{0,7} matches '0' zero to seven times
+        $val = preg_replace('/({0,8}'.ord($search[$i]).';?)/', $search[$i], $val); // with a ;
+    }
+
+    // now the only remaining whitespace attacks are \t, \n, and \r
+    $ra1 = array('javascript', 'vbscript', 'expression', 'applet', 'meta', 'xml', 'blink', 'link', 'style', 'script', 'embed', 'object', 'iframe', 'frame', 'frameset', 'ilayer', 'layer', 'bgsound', 'title', 'base');
+    $ra2 = array('onabort', 'onactivate', 'onafterprint', 'onafterupdate', 'onbeforeactivate', 'onbeforecopy', 'onbeforecut', 'onbeforedeactivate', 'onbeforeeditfocus', 'onbeforepaste', 'onbeforeprint', 'onbeforeunload', 'onbeforeupdate', 'onblur', 'onbounce', 'oncellchange', 'onchange', 'onclick', 'oncontextmenu', 'oncontrolselect', 'oncopy', 'oncut', 'ondataavailable', 'ondatasetchanged', 'ondatasetcomplete', 'ondblclick', 'ondeactivate', 'ondrag', 'ondragend', 'ondragenter', 'ondragleave', 'ondragover', 'ondragstart', 'ondrop', 'onerror', 'onerrorupdate', 'onfilterchange', 'onfinish', 'onfocus', 'onfocusin', 'onfocusout', 'onhelp', 'onkeydown', 'onkeypress', 'onkeyup', 'onlayoutcomplete', 'onload', 'onlosecapture', 'onmousedown', 'onmouseenter', 'onmouseleave', 'onmousemove', 'onmouseout', 'onmouseover', 'onmouseup', 'onmousewheel', 'onmove', 'onmoveend', 'onmovestart', 'onpaste', 'onpropertychange', 'onreadystatechange', 'onreset', 'onresize', 'onresizeend', 'onresizestart', 'onrowenter', 'onrowexit', 'onrowsdelete', 'onrowsinserted', 'onscroll', 'onselect', 'onselectionchange', 'onselectstart', 'onstart', 'onstop', 'onsubmit', 'onunload');
+    $ra = array_merge($ra1, $ra2);
+
+    $found = true; // keep replacing as long as the previous round replaced something
+    while ($found == true) {
+        $val_before = $val;
+        for ($i = 0; $i < sizeof($ra); $i++) {
+            $pattern = '/';
+            for ($j = 0; $j < strlen($ra[$i]); $j++) {
+                if ($j > 0) {
+                    $pattern .= '(';
+                    $pattern .= '(&#[xX]0{0,8}([9ab]);)';
+                    $pattern .= '|';
+                    $pattern .= '|({0,8}([9|10|13]);)';
+                    $pattern .= ')*';
+                }
+                $pattern .= $ra[$i][$j];
+            }
+            $pattern .= '/i';
+            $replacement = substr($ra[$i], 0, 2).'<x>'.substr($ra[$i], 2); // add in <> to nerf the tag
+            $val = preg_replace($pattern, $replacement, $val); // filter out the hex tags
+            if ($val_before == $val) {
+                // no replacements were made, so exit the loop
+                $found = false;
+            }
+        }
+    }
+    return $val;
 }

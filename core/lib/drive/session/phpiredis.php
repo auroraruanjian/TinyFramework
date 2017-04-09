@@ -36,7 +36,7 @@ class phpiredis implements \SessionHandlerInterface{
         $this->redis = phpiredis_connect($this->_config['save_path']['host'],$this->_config['save_path']['port']);
         
         if(empty($this->redis) || !is_resource($this->redis) ){
-            \core\lib\log::log( ' redis connect database'.$this->_config['save_path']['host'].' faild'.PHP_EOL , 'session_error' );
+            \core\lib\log::log( ' redis connect database'.$this->_config['save_path']['host'].' faild'.PHP_EOL , array('session_error','session') );
             throw new \Exception('Redis 连接失败'.$this->_config['save_path']['host'].':'.$this->_config['save_path']['port'].'，请检查!');
         }
         
@@ -45,7 +45,7 @@ class phpiredis implements \SessionHandlerInterface{
     }
     public function close(){
         if(empty($this->redis) || !is_resource($this->redis) ){
-            \core\lib\log::log( ' close redis resource is faild'.PHP_EOL , 'session_error' );
+            \core\lib\log::log( ' close redis resource is faild'.PHP_EOL , array('session_error','session') );
         }
         phpiredis_disconnect($this->redis);
     }

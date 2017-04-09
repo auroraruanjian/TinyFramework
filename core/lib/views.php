@@ -6,9 +6,10 @@ namespace core\lib;
 class views{
     
     public $assign;
+    protected $baseViewPath = ''; //模版路径
     
     public function __construct(){
-        
+        $this -> baseViewPath = APP . DS .'views' . DS . \core\lib\conf::get('viewpath', 'view') . DS ;
     }
     
     public function assign($name,$value){
@@ -16,11 +17,11 @@ class views{
     }
     
     public function display ($file){
-        $rfile=APP.'/views/'.$file;
+        $rfile=$this->baseViewPath.$file;
         if(is_file($rfile)){
             
             \Twig_Autoloader::register();
-            $loader = new \Twig_Loader_Filesystem(APP.'/views');
+            $loader = new \Twig_Loader_Filesystem( $this->baseViewPath );
             $twig = new \Twig_Environment($loader, array(
                     'cache' => NICK.'/log/twig',
                     'debug' => DEBUG,

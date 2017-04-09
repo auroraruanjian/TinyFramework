@@ -92,15 +92,15 @@ class route{
                 if(method_exists($ctrl, $method_name)){
                     $ctrl -> $method_name();
                 }else{
-                    \core\lib\log::log('cannot found '.$method_name,'router_error');
+                    \core\lib\log::log('cannot found '.$method_name,array('router_error','router'));
                     throw new \Exception("找不到控制器 ".$method_name);
                 }
             }else{
-                \core\lib\log::log('cannot found '.$cltrlClass,'router_error');
+                \core\lib\log::log('cannot found '.$cltrlClass,array('router_error','router'));
                 throw new \Exception("找不到类 ".$cltrlClass);
             }
         }else{
-            \core\lib\log::log('cannot found '.$ctrlfile,'router_error');
+            \core\lib\log::log('cannot found '.$ctrlfile,array('router_error','router'));
             throw new \Exception("找不到文件 ".$ctrlfile);
         }
     }

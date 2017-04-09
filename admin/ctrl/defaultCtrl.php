@@ -26,7 +26,7 @@ class defaultCtrl extends \core\lib\baseCtrl  {
                 ajaxMsg(500,'登录失败');
             }
         }else{
-            $GLOBALS['oViews']->display('notebook/login.html');
+            $GLOBALS['oViews']->display('login.html');
         }
     }
     
@@ -72,7 +72,9 @@ class defaultCtrl extends \core\lib\baseCtrl  {
         
         $GLOBALS['oViews']->assign('data',$data);
         
-        $GLOBALS['oViews']->display('notebook/index.html');
+        $GLOBALS['oViews']->assign('pagename','content/welcome.html');
+        
+        $GLOBALS['oViews']->display('common/page_box.html');
     }
     
     
