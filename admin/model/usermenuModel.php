@@ -27,24 +27,26 @@ class usermenuModel extends model{
     	*/
     	$control = $this->quote($control);
     	$action  = $this->quote($action);
-    	$filed = 'um.title,um.descript,um.control,um.action,um.is_enable,um.rec_log,um.is_enable';
+    	$filed = 'um.title,um.descript,um.control,um.action,um.is_enable,um.rec_log';
     	
     	$result = null;
     	//用户未登陆
     	if( -1 == $userid ){
     		//检查菜单是否可任何人查看
-    		$sql = $this->query("SELECT {$filed} FROM {$this->table} as um WHERE find_in_set('*',um.allowusergroup)  AND um.control={$control} AND um.action={$action} Limit 1") ;
+    		$sql = "SELECT {$filed} FROM {$this->table} as um WHERE find_in_set('*',um.allowusergroup)  AND um.control={$control} AND um.action={$action} Limit 1" ;
     		
-    		$result = $this->query($sql)-> fetch();
-    		
+    	    if( ( $statement = $this->query( $sql ) ) != false ){
+    		    $result = $statement -> fetch(\PDO::FETCH_ASSOC);
+    		}
     	}else{
     	    //检查 用户 是否有权限查看菜单
     		$userid  = $this->quote( $userid );
 
     		$sql="SELECT {$filed} FROM {$this->table} as um INNER JOIN admin_user as au ON find_in_set('*',um.allowusergroup) OR find_in_set(au.groupid,um.allowusergroup) WHERE um.control={$control} AND um.action={$action} AND au.userid={$userid} Limit 1";
     		
-    		$result = $this->query($sql)->fetch();
-    		
+    		if( ( $statement = $this->query( $sql ) ) != false ){
+    		    $result = $statement -> fetch(\PDO::FETCH_ASSOC);
+    		}
     	}
     	
     	if( empty($result) ){
@@ -65,7 +67,7 @@ class usermenuModel extends model{
     }
     
     /**
-     * @todo 检查 menu 状态
+     * 检查 menu 状态
      * @param String $control  控制器名称
      * @param String $action   方法名称
      * @return int 1：存在 ， -1：不存在，-2：菜单关闭
@@ -76,7 +78,11 @@ class usermenuModel extends model{
         
         $sql = "SELECT is_enable FROM {$this->table} WHERE `control` = {$control} AND `action` = {$action} Limit 1";
         
-        $result = $this -> query( $sql ) -> fetch();
+        $result = false;
+        
+        if( ( $statement = $this->query( $sql ) ) != false ){
+            $result = $statement -> fetch();
+        }
         
         if($result != false){
             if( $result['is_enable'] == 1 ){
@@ -90,6 +96,41 @@ class usermenuModel extends model{
             //菜单不存在
             return -1;
         }
+    }
+    
+    /**
+     * 获取所有菜单列表
+     */
+    public function getMenuList(){
+        
+        $sql = "SELECT * FROM {$this->table} WHERE parentid = 0";
+        
+        $result = array();
+        
+        if( ( $statement = $this->query( $sql ) ) != false ){
+            $result = $statement -> fetchAll();
+        }
+        
+        return $result;
+    }
+    
+    /**
+     * 获取菜单详情
+     * @param int $menuid 菜单ID
+     * @return Array 菜单详情
+     */
+    public function getOne( $menuid ){
+        $menuid = $this->quote($menuid);
+        
+        $sql = "SELECT `menuid`,`parentid`,`parentstr`,`title`,`descript`,`control`,`action`,`is_enable`,`allowusergroup`,`rec_log`,`sort`,`is_show` FROM {$this->table} WHERE menuid = {$menuid} LIMIT 1";
+        
+        $result = array();
+        
+        if( ( $statement = $this->query( $sql ) ) != false ){
+            $result = $statement -> fetch( \PDO::FETCH_ASSOC );
+        }
+        
+        return $result;
     }
     
 }

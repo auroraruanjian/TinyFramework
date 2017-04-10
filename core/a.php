@@ -6,7 +6,7 @@ class A{
     public static $classMap = array();                      //已经加载的类名
     public static $classObjects = array();                  //所有单例类的数组集合
     
-    static public function run($config){
+    static public function run( $config ){
         $oConfig = array(
             'dispatcher' => 'core\lib\dispatcher',
         );

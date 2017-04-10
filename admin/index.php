@@ -30,6 +30,11 @@
     
     spl_autoload_register('\core\A::load');
     
+    //自定义错误处理
+    set_error_handler(function( $errno , $errstr , $errfile , $errline ){
+        //
+    });
+    
     //初始化视图层
     $GLOBALS['oViews'] = \core\A::singleton('\core\lib\views');
     
