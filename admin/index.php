@@ -8,7 +8,7 @@
     define('MODULE','admin');                   //Model 类目录名称
     
     define('DEBUG', true);                      //是否 调试模式
-    define('RECORD_LOG',true);                 //是否记录日志
+    define('RECORD_LOG',true);                  //是否记录日志
     
     require_once NICK.DS.'vendor'.DS.'autoload.php';
     
