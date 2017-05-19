@@ -37,8 +37,8 @@ function count_str($str,$length,$suff='...'){
 /**
  * 获取GET参数 
  * @param String $name    需要从GET中获取的KEY
- * @param String $default 默认值，如果GET获取不到 $name  
- * @param String $type    [int,string,boolean]
+ * @param String $default 默认值，如果GET获取不到 $name 则返回$default
+ * @param String $type    类型[int,string,boolean]
  */
 function get($name,$default=false,$type=false){
     if(isset($_GET[$name])){
@@ -49,7 +49,7 @@ function get($name,$default=false,$type=false){
                 case 'string':
                     //因为在程序底层已经 转义 处理，这里不再多重转义
                     //return addslashes_deep($_GET[$name]);
-                    return $_GET[$name];
+                    return strval($_GET[$name]);
                 case 'boolean':
                     return $_GET[$name] ? true : false ;
                 default:
@@ -64,7 +64,10 @@ function get($name,$default=false,$type=false){
 }
 
 /**
- *@todo 获取POST参数
+ *获取POST参数
+ *@param string $name   需要从GET中获取的KEY
+ *@param mixed $default 默认值,如果POST获取不到 $name则返回$default  
+ *@param string $type   类型[int,string,boolean]
  */
 function post($name,$default=false,$type=false){
     if(isset($_POST[$name])){
@@ -75,7 +78,7 @@ function post($name,$default=false,$type=false){
                 case 'string':
                     //因为在程序底层已经 转义 处理，这里不再多重转义
                     //return addslashes_deep($_GET[$name]);
-                    return $_POST[$name];
+                    return strval($_POST[$name]);
                 case 'boolean':
                     return $_POST[$name] ? true : false ;
                 default:

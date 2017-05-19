@@ -89,7 +89,8 @@
       </footer>
     </section>
   </aside>
-
+  
+</section>
 
 
 <div class="modal fade" id="modal">
@@ -99,31 +100,32 @@
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h4 class="modal-title">菜单详情</h4>
       </div>
-      <form class="form-horizontal" method="get">
+      <form class="form-horizontal" method="post" >
+      <input type="hidden" name="menuid" value=''>
       <div class="modal-body">
           <section class="scrollable wrapper w-f">
             <div class="form-group">
-                    <label class="col-sm-2 control-label" for="input-id-1">菜单名称</label>
+                    <label class="col-sm-2 control-label" for="i_title">菜单名称</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="input-id-1">
+                        <input type="text" class="form-control" id="i_title" name='title'>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-2 control-label" for="input-id-1">菜单描述</label>
+                    <label class="col-sm-2 control-label" for="i_descript">菜单描述</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="input-id-1">
+                        <input type="text" class="form-control" id="i_descript" name='descript'>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-2 control-label" for="input-id-1">控制器</label>
+                    <label class="col-sm-2 control-label" for="i_control">控制器</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="input-id-1">
+                        <input type="text" class="form-control" id="i_control" name="control">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-sm-2 control-label" for="input-id-1">动作方法</label>
+                    <label class="col-sm-2 control-label" for="i_action">动作方法</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="input-id-1">
+                        <input type="text" class="form-control" id="i_action" name="action">
                     </div>
                 </div>
                 <div class="form-group">
@@ -131,7 +133,7 @@
                         <label class="col-sm-7 control-label" style="padding: 7px 0px 0px;">是否开启</label>
                         <div class="col-sm-5" style="padding: 0px 4px;">
                             <label class="switch">
-                                <input type="checkbox">
+                                <input type="checkbox" name='is_enable'>
                                 <span></span>
                             </label>
                         </div>
@@ -140,7 +142,7 @@
                         <label class="col-sm-7 control-label" style="padding: 7px 0px 0px;">是否显示</label>
                         <div class="col-sm-5" style="padding: 0px 4px;">
                             <label class="switch">
-                                <input type="checkbox">
+                                <input type="checkbox" name="is_show">
                                 <span></span>
                             </label>
                         </div>
@@ -149,7 +151,7 @@
                         <label class="col-sm-7 control-label" style="padding: 7px 0px 0px;">是否记录日志</label>
                         <div class="col-sm-5" style="padding: 0px 4px;">
                             <label class="switch">
-                                <input type="checkbox">
+                                <input type="checkbox" name="rec_log">
                                 <span></span>
                             </label>
                         </div>
@@ -157,16 +159,16 @@
                     <div class="col-sm-1"></div>
                 </div>
                 <div class="form-group ">
-                    <label class="col-sm-2 control-label" for="input-id-1">排序</label>
+                    <label class="col-sm-2 control-label" for="i_sort">排序</label>
                     <div class="col-sm-10 ">
-                        <input type="text" class="form-control" id="input-id-1" style="width: 260px;">
+                        <input type="text" class="form-control" id="i_sort" name="sort" style="width: 260px;">
                     </div>
                 </div>
           </section>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-        <button type="button" class="btn btn-info" data-loading-text="Updating...">保存改变</button>
+        <button type="button" class="btn btn-info" data-loading-text="Updating..." id="saveChange">保存改变</button>
       </div>
       </form>
     </div>
@@ -183,15 +185,59 @@ document.ready=function(){
             'dataType':'JSON',
             'success':function( data ){
                 if( data.code == '200' ){
+                    
+                    var menuinfo = data.data;
+                    
+                    $("#modal input[name='menuid']").val(menuinfo.menuid);
+                    $("#modal input[name='title']").val(menuinfo.title);
+                    $("#modal input[name='descript']").val(menuinfo.descript);
+                    $("#modal input[name='control']").val(menuinfo.control);
+                    $("#modal input[name='action']").val(menuinfo.action);
+                    $("#modal input[name='sort']").val(menuinfo.sort);
+                    
+                    $("#modal input[name=is_enable]")[0].checked = (menuinfo.is_enable==1)?true:false;
+                    $("#modal input[name=is_show]")[0].checked = (menuinfo.is_show==1)?true:false;
+                    $("#modal input[name=rec_log]")[0].checked = (menuinfo.rec_log==1)?true:false;
+                    
                     $('#modal').modal({});
                 }else{
-                    
+                    alert('网络问题');
                 }
             }
         });
     });
+    
+    var isSubmit = false;
+    $("#saveChange").click(function(){
+        if( isSubmit == false ){
+            var data = {
+                'menuid':$("#modal input[name='menuid']").val(),
+                'title':$("#modal input[name='title']").val(),
+                'descript':$("#modal input[name='descript']").val(),
+                'control':$("#modal input[name='control']").val(),
+                'action':$("#modal input[name='action']").val(),
+                'sort':$("#modal input[name='sort']").val(),
+                'is_enable':($("#modal input[name=is_enable]")[0].checked)?1:0,
+                'is_show':($("#modal input[name=is_show]")[0].checked)?1:0,
+                'rec_log':($("#modal input[name=rec_log]")[0].checked)?1:0,
+            };
+            $.ajax({
+                'url':'./?c=menu/changeMenu',
+                'method':'POST',
+                'dataType':'JSON',
+                'data' : data,
+                'success':function( data ){
+                    $("#saveChange").button('reset');
+                    alert( data.msg );
+                }
+            });
+        }
+    });
+    
+    
 }
 </script>
 
+
+<a href="#" class="hide nav-off-screen-block" data-toggle="class:nav-off-screen" data-target="#nav"></a> 
 </section>
-<a href="#" class="hide nav-off-screen-block" data-toggle="class:nav-off-screen" data-target="#nav"></a> </section>

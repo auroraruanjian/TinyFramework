@@ -133,4 +133,15 @@ class usermenuModel extends model{
         return $result;
     }
     
+    /**
+     * 更新菜单详情
+     * @param int $menuid   菜单ID
+     * @param array $data   需要更新的字段、
+     * @return int          受影响的行数
+     */
+    public function updateMenu( $menuid , $data ){
+        
+        return $this->update( $this->table , $data , [ 'menuid' => $menuid ] );
+        
+    }
 }
